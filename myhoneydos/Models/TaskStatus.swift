@@ -7,10 +7,13 @@
 
 import Foundation
 
+// MARK: - Enhanced Task Status
 enum TaskStatus: String, CaseIterable, Codable {
     case toDo = "To Do"
     case inProgress = "In Progress"
     case completed = "Completed"
+    case onHold = "On Hold"
+    case cancelled = "Cancelled"
     
     var icon: String {
         switch self {
@@ -20,6 +23,10 @@ enum TaskStatus: String, CaseIterable, Codable {
             return "🍯"
         case .completed:
             return "✅"
+        case .onHold:
+            return "⏸️"
+        case .cancelled:
+            return "❌"
         }
     }
     
@@ -31,6 +38,10 @@ enum TaskStatus: String, CaseIterable, Codable {
             return "orange"
         case .completed:
             return "green"
+        case .onHold:
+            return "gray"
+        case .cancelled:
+            return "red"
         }
     }
 }

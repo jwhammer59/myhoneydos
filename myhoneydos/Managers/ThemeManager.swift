@@ -76,6 +76,10 @@ class ThemeManager {
             return BeeColors.pollenOrange
         case .completed:
             return BeeColors.leafGreen
+        case .onHold:
+            return BeeColors.flowerPink
+        case .cancelled:
+            return BeeColors.beeBlack
         }
     }
     

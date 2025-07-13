@@ -13,7 +13,11 @@ struct HoneyDoApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             HoneyDoTask.self,
-            Supply.self
+            Supply.self,
+            TaskCategory.self,
+            TaskTag.self,
+            TaskTemplate.self,
+            SupplyTemplate.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema)
         
@@ -26,7 +30,7 @@ struct HoneyDoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EnhancedContentView()
         }
         .modelContainer(sharedModelContainer)
     }

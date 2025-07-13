@@ -394,13 +394,21 @@ struct TaskDetailView: View {
     
     private func completeTask() {
         withAnimation(AnimationManager.taskComplete) {
-            dataManager.completeTask(task, in: modelContext)
+            task.status = .completed
+            task.completedDate = Date()
+            dataManager.updateTask(task, in: modelContext)
         }
     }
     
     private func changeStatus(to status: TaskStatus) {
         withAnimation(AnimationManager.taskComplete) {
-            dataManager.updateTaskStatus(task, to: status, in: modelContext)
+            task.status = status
+            if status == .completed {
+                task.completedDate = Date()
+            } else {
+                task.completedDate = nil
+            }
+            dataManager.updateTask(task, in: modelContext)
         }
     }
     
