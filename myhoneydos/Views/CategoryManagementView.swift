@@ -803,7 +803,7 @@ struct FilterView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var selectedCategory: TaskCategory?
     @Binding var selectedFilter: TaskFilter?
-    @Binding var sortOption: EnhancedContentView.SortOption
+    @Binding var sortOption: ContentView.SortOption
     
     @Query private var categories: [TaskCategory]
     private let themeManager = ThemeManager.shared
@@ -865,7 +865,7 @@ struct FilterView: View {
                         .foregroundColor(themeManager.primaryText)
                     
                     VStack(spacing: 8) {
-                        ForEach(EnhancedContentView.SortOption.allCases, id: \.self) { option in
+                        ForEach(ContentView.SortOption.allCases, id: \.self) { option in
                             Button(action: { sortOption = option }) {
                                 HStack {
                                     Text(option.rawValue)

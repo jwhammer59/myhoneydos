@@ -30,7 +30,7 @@ struct HoneyDoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            EnhancedContentView()
+            ContentView()
         }
         .modelContainer(sharedModelContainer)
     }

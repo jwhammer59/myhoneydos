@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct EnhancedContentView: View {
+struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Query private var tasks: [HoneyDoTask]
@@ -157,7 +157,7 @@ struct EnhancedContentView: View {
             }
         }
         .sheet(isPresented: $showingAddTask) {
-            AddTaskView()
+            EnhancedAddTaskView()
         }
         .sheet(item: $selectedTask) { task in
             TaskDetailView(task: task)
@@ -692,7 +692,7 @@ struct CompletionRateCard: View {
 // MARK: - Preview
 struct EnhancedContentView_Previews: PreviewProvider {
     static var previews: some View {
-        EnhancedContentView()
+        ContentView()
             .modelContainer(for: HoneyDoTask.self, inMemory: true)
     }
 }
