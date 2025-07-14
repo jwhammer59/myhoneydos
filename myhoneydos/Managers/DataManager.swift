@@ -15,7 +15,7 @@ class DataManager {
     private init() {}
     
     // MARK: - Task Operations
-    func createTask(title: String, description: String = "", priority: Int = 1, dueDate: Date? = nil, category: TaskCategory? = nil, tags: [TaskTag] = [], in context: ModelContext) {
+    func createTask(title: String, description: String = "", priority: Int = 1, dueDate: Date? = nil, category: TaskCategory? = nil, tags: [TaskTag] = [], supplies: [(name: String, quantity: Int, estimatedCost: Double?, supplier: String?)] = [], in context: ModelContext) {
         let task = HoneyDoTask(
             title: title,
             taskDescription: description,
@@ -25,6 +25,20 @@ class DataManager {
         )
         task.tags = tags
         context.insert(task)
+        
+        // Add supplies if provided
+        for supplyData in supplies {
+            let supply = Supply(
+                name: supplyData.name,
+                quantity: supplyData.quantity,
+                estimatedCost: supplyData.estimatedCost,
+                supplier: supplyData.supplier
+            )
+            supply.task = task
+            task.supplies.append(supply)
+            context.insert(supply)
+        }
+        
         saveContext(context)
     }
     

@@ -43,6 +43,221 @@ struct ContentView: View {
         case category = "Category"
     }
     
+    // MARK: - Modern Control Components
+    struct CategoryFilterButton: View {
+        let selectedCategory: TaskCategory?
+        let categories: [TaskCategory]
+        let onCategorySelected: (TaskCategory?) -> Void
+        
+        private let themeManager = ThemeManager.shared
+        
+        var body: some View {
+            Menu {
+                Button("All Categories") {
+                    onCategorySelected(nil)
+                }
+                ForEach(categories, id: \.id) { category in
+                    Button("\(category.icon) \(category.name)") {
+                        onCategorySelected(category)
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    if let category = selectedCategory {
+                        Text(category.icon)
+                            .font(.subheadline)
+                        Text(category.name)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(themeManager.primaryText)
+                    } else {
+                        Image(systemName: "folder")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+//                        Text("Category")
+//                            .font(.subheadline)
+//                            .foregroundColor(themeManager.primaryText)
+                    }
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                        .foregroundColor(themeManager.secondaryText)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(selectedCategory != nil ? themeManager.accentColor.opacity(0.15) : themeManager.tertiaryBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(selectedCategory != nil ? themeManager.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+                        )
+                )
+            }
+        }
+    }
+    
+    struct QuickFilterButton: View {
+        let selectedFilter: TaskFilter?
+        let onFilterSelected: (TaskFilter) -> Void
+        
+        private let themeManager = ThemeManager.shared
+        
+        var body: some View {
+            Menu {
+                ForEach(TaskFilter.allCases, id: \.self) { filter in
+                    Button("\(filter.icon) \(filter.rawValue)") {
+                        onFilterSelected(filter)
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    if let filter = selectedFilter {
+                        Text(filter.icon)
+                            .font(.subheadline)
+                        Text(filter.rawValue)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(themeManager.primaryText)
+                            .lineLimit(1)
+                    } else {
+                        Image(systemName: "line.3.horizontal.decrease")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+//                        Text("Filter")
+//                            .font(.subheadline)
+//                            .foregroundColor(themeManager.primaryText)
+                    }
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                        .foregroundColor(themeManager.secondaryText)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(selectedFilter != nil ? themeManager.accentColor.opacity(0.15) : themeManager.tertiaryBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(selectedFilter != nil ? themeManager.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+                        )
+                )
+            }
+            .overlay(
+                // Badge indicator for active filter
+                selectedFilter != nil ?
+                Circle()
+                    .fill(themeManager.accentColor)
+                    .frame(width: 8, height: 8)
+                    .offset(x: 8, y: -8) : nil,
+                alignment: .topTrailing
+            )
+        }
+    }
+    
+    struct SortMenuButton: View {
+        let sortOption: ContentView.SortOption
+        let onSortSelected: (ContentView.SortOption) -> Void
+        
+        private let themeManager = ThemeManager.shared
+        
+        var body: some View {
+            Menu {
+                ForEach(ContentView.SortOption.allCases, id: \.self) { option in
+                    Button(action: { onSortSelected(option) }) {
+                        HStack {
+                            Text(option.rawValue)
+                            if sortOption == option {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.up.arrow.down")
+                        .font(.caption)
+                        .foregroundColor(themeManager.secondaryText)
+//                    Text("Sort")
+//                        .font(.subheadline)
+//                        .foregroundColor(themeManager.primaryText)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(themeManager.tertiaryBackground)
+                )
+            }
+        }
+    }
+    
+    struct ActiveFiltersRow: View {
+        let selectedCategory: TaskCategory?
+        let selectedFilter: TaskFilter?
+        let onClearCategory: () -> Void
+        let onClearFilter: () -> Void
+        
+        var body: some View {
+            HStack(spacing: 8) {
+                if let category = selectedCategory {
+                    FilterChip(text: category.name, icon: category.icon, onRemove: onClearCategory)
+                }
+                
+                if let filter = selectedFilter {
+                    FilterChip(text: filter.rawValue, icon: filter.icon, onRemove: onClearFilter)
+                }
+            }
+        }
+    }
+    
+    struct SelectionModeToggle: View {
+        @Binding var isSelectionMode: Bool
+        let selectedCount: Int
+        
+        private let themeManager = ThemeManager.shared
+        
+        var body: some View {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isSelectionMode.toggle()
+                }
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "checkmark.circle")
+                        .font(.subheadline)
+                        .foregroundColor(isSelectionMode ? themeManager.accentColor : themeManager.secondaryText)
+                    
+                    if isSelectionMode {
+                        Text(selectedCount > 0 ? "\(selectedCount) selected" : "Select tasks")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(themeManager.primaryText)
+                            .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    } else {
+                        Text("Select")
+                            .font(.caption)
+                            .foregroundColor(themeManager.secondaryText)
+                            .transition(.opacity.combined(with: .move(edge: .leading)))
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(isSelectionMode ? themeManager.accentColor.opacity(0.1) : themeManager.tertiaryBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(isSelectionMode ? themeManager.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+                        )
+                )
+            }
+            .animation(.easeInOut(duration: 0.2), value: isSelectionMode)
+            .animation(.easeInOut(duration: 0.2), value: selectedCount)
+        }
+    }
+    
     var filteredTasks: [HoneyDoTask] {
         var result = showingSearch ? searchManager.searchResults : tasks
         
@@ -300,105 +515,71 @@ struct ContentView: View {
     }
     
     private var controlsView: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 16) {
-                // Category Filter
-                Menu {
-                    Button("All Categories") { selectedCategory = nil }
-                    ForEach(categories, id: \.id) { category in
-                        Button("\(category.icon) \(category.name)") {
-                            selectedCategory = category
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Text(selectedCategory?.name ?? "All Categories")
-                            .font(.subheadline)
-                            .foregroundColor(themeManager.primaryText)
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                            .foregroundColor(themeManager.secondaryText)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(themeManager.tertiaryBackground)
-                    .cornerRadius(8)
-                }
-                
-                // Quick Filters
-                Menu {
-                    ForEach(TaskFilter.allCases, id: \.self) { filter in
-                        Button("\(filter.icon) \(filter.rawValue)") {
-                            selectedFilter = selectedFilter == filter ? nil : filter
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Text(selectedFilter?.rawValue ?? "Filter")
-                            .font(.subheadline)
-                            .foregroundColor(themeManager.primaryText)
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                            .foregroundColor(themeManager.secondaryText)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(selectedFilter != nil ? themeManager.accentColor.opacity(0.2) : themeManager.tertiaryBackground)
-                    .cornerRadius(8)
-                }
-                
-                // Sort Menu
-                Menu {
-                    ForEach(SortOption.allCases, id: \.self) { option in
-                        Button(option.rawValue) {
-                            sortOption = option
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.up.arrow.down")
-                            .font(.caption)
-                        Text(sortOption.rawValue)
-                            .font(.subheadline)
-                            .foregroundColor(themeManager.primaryText)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(themeManager.tertiaryBackground)
-                    .cornerRadius(8)
-                }
+        VStack(spacing: 16) {
+            // Primary Controls Row
+            HStack(spacing: 6) {
+                // Category Filter with improved styling
+                CategoryFilterButton(
+                    selectedCategory: selectedCategory,
+                    categories: categories,
+                    onCategorySelected: { selectedCategory = $0 }
+                )
                 
                 Spacer()
                 
-                // Selection Mode Toggle
-                Button(action: { isSelectionMode.toggle() }) {
-                    Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "checkmark.circle")
-                        .foregroundColor(themeManager.accentColor)
-                }
+                // Quick Filters with badge indicator
+                QuickFilterButton(
+                    selectedFilter: selectedFilter,
+                    onFilterSelected: { selectedFilter = selectedFilter == $0 ? nil : $0 }
+                )
+                
+                Spacer()
+                
+                // Sort Menu with cleaner design
+                SortMenuButton(
+                    sortOption: sortOption,
+                    onSortSelected: { sortOption = $0 }
+                )
             }
-            .padding(.horizontal)
             
-            // Active Filters Display
-            if selectedCategory != nil || selectedFilter != nil {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        if let category = selectedCategory {
-                            FilterChip(text: category.name, icon: category.icon) {
-                                selectedCategory = nil
-                            }
-                        }
-                        
-                        if let filter = selectedFilter {
-                            FilterChip(text: filter.rawValue, icon: filter.icon) {
-                                selectedFilter = nil
-                            }
-                        }
+            // Secondary Controls Row (when needed)
+            if selectedCategory != nil || selectedFilter != nil || isSelectionMode {
+                HStack(spacing: 12) {
+                    // Active Filters Display
+                    if selectedCategory != nil || selectedFilter != nil {
+                        ActiveFiltersRow(
+                            selectedCategory: selectedCategory,
+                            selectedFilter: selectedFilter,
+                            onClearCategory: { selectedCategory = nil },
+                            onClearFilter: { selectedFilter = nil }
+                        )
                     }
-                    .padding(.horizontal)
+                    
+                    Spacer()
+                    
+                    // Selection Mode Toggle with descriptive text
+                    SelectionModeToggle(
+                        isSelectionMode: $isSelectionMode,
+                        selectedCount: selectedTasks.count
+                    )
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+            } else {
+                // Selection Mode Toggle (always visible but compact when no filters)
+                HStack {
+                    Spacer()
+                    
+                    SelectionModeToggle(
+                        isSelectionMode: $isSelectionMode,
+                        selectedCount: selectedTasks.count
+                    )
                 }
             }
         }
+        .padding(.horizontal)
         .padding(.bottom, 16)
+        .padding(.top, 12)
+        .animation(.easeInOut(duration: 0.3), value: selectedCategory != nil || selectedFilter != nil || isSelectionMode)
     }
     
     private var taskListView: some View {
@@ -658,7 +839,7 @@ struct StatCard: View {
                 .font(.caption)
                 .foregroundColor(themeManager.secondaryText)
         }
-        .frame(minWidth: 80)
+        .frame(minWidth: 70)
         .padding(.vertical, 12)
         .background(themeManager.tertiaryBackground)
         .cornerRadius(12)
@@ -690,7 +871,7 @@ struct CompletionRateCard: View {
 }
 
 // MARK: - Preview
-struct EnhancedContentView_Previews: PreviewProvider {
+struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .modelContainer(for: HoneyDoTask.self, inMemory: true)

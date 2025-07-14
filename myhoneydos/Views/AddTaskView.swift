@@ -444,19 +444,39 @@ struct EnhancedAddTaskView: View {
     private func createTask() {
         let selectedTagObjects = tags.filter { selectedTags.contains($0.id) }
         
-        dataManager.createTask(
+        // Create the task first
+        let newTask = HoneyDoTask(
             title: title,
-            description: taskDescription,
+            taskDescription: taskDescription,
             priority: priority,
             dueDate: hasDueDate ? dueDate : nil,
-            category: selectedCategory,
-            tags: selectedTagObjects,
-            in: modelContext
+            category: selectedCategory
         )
+        newTask.tags = selectedTagObjects
         
-        // Note: We'll need to get the created task to add supplies
-        // For now, we'll create a simple task and then add supplies
-        dismiss()
+        // Insert the task into the context
+        modelContext.insert(newTask)
+        
+        // Add supplies to the task
+        for supplyItem in supplies {
+            let supply = Supply(
+                name: supplyItem.name,
+                quantity: supplyItem.quantity,
+                estimatedCost: supplyItem.estimatedCost,
+                supplier: supplyItem.supplier
+            )
+            supply.task = newTask
+            newTask.supplies.append(supply)
+            modelContext.insert(supply)
+        }
+        
+        // Save the context
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Error saving task with supplies: \(error)")
+        }
     }
 }
 
