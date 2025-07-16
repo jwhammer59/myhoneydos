@@ -160,6 +160,8 @@ struct AddSupplyToTaskSheet: View {
     let task: HoneyDoTask
     @State private var supplyName = ""
     @State private var supplyQuantity = 1
+    @State private var supplyEstimatedCost: Double?
+    @State private var supplySupplier: String?
     @FocusState private var isNameFieldFocused: Bool
     
     private let themeManager = ThemeManager.shared
@@ -264,6 +266,8 @@ struct AddSupplyToTaskSheet: View {
             to: task,
             name: supplyName.trimmingCharacters(in: .whitespacesAndNewlines),
             quantity: supplyQuantity,
+            estimatedCost: supplyEstimatedCost,
+            supplier: supplySupplier,
             in: modelContext
         )
         dismiss()
@@ -277,6 +281,9 @@ struct EditSupplySheet: View {
     @Bindable var supply: Supply
     @State private var tempName: String = ""
     @State private var tempQuantity: Int = 1
+    @State private var tempEstimatedCost: Double?
+    @State private var tempCostText: String = ""
+    @State private var tempSupplier: String = ""
     @FocusState private var isNameFieldFocused: Bool
     
     private let themeManager = ThemeManager.shared
@@ -326,6 +333,28 @@ struct EditSupplySheet: View {
                             Spacer()
                         }
                     }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Estimated Cost (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+                        
+                        TextField("0.00", text: $tempCostText)
+                            .textFieldStyle(CustomTextFieldStyle())
+                            .keyboardType(.decimalPad)
+                            .onChange(of: tempCostText) {
+                                tempEstimatedCost = Double(tempCostText)
+                            }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Supplier (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+                        
+                        TextField("Enter supplier...", text: $tempSupplier)
+                            .textFieldStyle(CustomTextFieldStyle())
+                    }
                 }
                 .padding()
                 .background(
@@ -366,6 +395,9 @@ struct EditSupplySheet: View {
             .onAppear {
                 tempName = supply.name
                 tempQuantity = supply.quantity
+                tempEstimatedCost = supply.estimatedCost
+                tempCostText = String(supply.estimatedCost ?? 0.0)
+                tempSupplier = supply.supplier ?? "N/A"
                 isNameFieldFocused = true
             }
         }
@@ -378,6 +410,8 @@ struct EditSupplySheet: View {
             supply,
             name: tempName.trimmingCharacters(in: .whitespacesAndNewlines),
             quantity: tempQuantity,
+            estimatedCost: tempEstimatedCost,
+            supplier: tempSupplier,
             in: modelContext
         )
         dismiss()

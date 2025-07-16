@@ -152,9 +152,37 @@ struct SupplyRow: View {
                     .foregroundColor(supply.isObtained ? themeManager.secondaryText : themeManager.primaryText)
                     .strikethrough(supply.isObtained)
                 
-                Text("Quantity: \(supply.quantity)")
-                    .font(.caption)
-                    .foregroundColor(themeManager.secondaryText)
+                HStack(spacing: 8) {
+                    Text("Qty: \(supply.quantity)")
+                        .font(.caption)
+                        .foregroundColor(themeManager.secondaryText)
+                    
+                    if let estimatedCost = supply.estimatedCost {
+                        Text("Est: $\(estimatedCost, specifier: "%.2f")")
+                            .font(.caption)
+                            .foregroundColor(themeManager.secondaryText)
+                    }
+                    
+                    if let actualCost = supply.actualCost {
+                        Text("Actual: $\(actualCost, specifier: "%.2f")")
+                            .font(.caption)
+                            .foregroundColor(supply.isObtained ? .green : themeManager.secondaryText)
+                    }
+                }
+                
+                if let supplier = supply.supplier, !supplier.isEmpty {
+                    Text("From: \(supplier)")
+                        .font(.caption)
+                        .foregroundColor(themeManager.secondaryText)
+                        .italic()
+                }
+                
+                if !supply.notes.isEmpty {
+                    Text(supply.notes)
+                        .font(.caption)
+                        .foregroundColor(themeManager.secondaryText)
+                        .lineLimit(2)
+                }
             }
             
             Spacer()

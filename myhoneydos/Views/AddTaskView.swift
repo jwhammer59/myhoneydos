@@ -60,7 +60,7 @@ struct EnhancedAddTaskView: View {
                         dueDateSection
                         
                         // Tags Section
-                        tagsSection
+//                        tagsSection
                         
                         // Supplies Section
                         suppliesSection

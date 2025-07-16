@@ -33,6 +33,7 @@ final class TaskCategory {
         TaskCategory(name: "Personal", icon: "👤", color: "green"),
         TaskCategory(name: "Shopping", icon: "🛒", color: "purple"),
         TaskCategory(name: "Health", icon: "🏥", color: "red"),
-        TaskCategory(name: "Garden", icon: "🌱", color: "mint")
+        TaskCategory(name: "Garden", icon: "🌱", color: "mint"),
+        TaskCategory(name: "Auto", icon: "🚗", color: "red")
     ]
 }
