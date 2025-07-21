@@ -297,7 +297,7 @@ struct TemplateCardView: View {
     }
 }
 
-// MARK: - Create Template View
+// MARK: - Create Template View (FIXED)
 struct CreateTemplateView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -333,8 +333,11 @@ struct CreateTemplateView: View {
                         // Header
                         headerView
                         
-                        // Template Details
+                        // Template Details Section
                         templateDetailsSection
+                        
+                        // Task Details Section (FIXED: Now included)
+                        taskDetailsSection
                         
                         // Priority Section
                         prioritySection
@@ -413,6 +416,7 @@ struct CreateTemplateView: View {
         )
     }
     
+    // FIXED: Added the missing task details section
     private var taskDetailsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Task Details")

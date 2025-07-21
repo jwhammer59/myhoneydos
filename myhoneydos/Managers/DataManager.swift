@@ -164,7 +164,7 @@ class DataManager {
         saveContext(context)
     }
     
-    // MARK: - Template Operations
+    // MARK: - Template Operations (UPDATED)
     func createTemplate(name: String, title: String, description: String = "", priority: Int = 3, category: TaskCategory? = nil, supplies: [SupplyTemplate] = [], tags: [TaskTag] = [], in context: ModelContext) -> TaskTemplate {
         let template = TaskTemplate(
             name: name,
@@ -173,14 +173,21 @@ class DataManager {
             priority: priority,
             category: category
         )
-        template.supplies = supplies
-        template.tags = tags
         
+        // Insert the template first
         context.insert(template)
+        
+        // Add supply templates
         for supply in supplies {
             supply.template = template
+            template.supplies.append(supply)
             context.insert(supply)
         }
+        
+        // Add tags
+        template.tags = tags
+        
+        // Save the context
         saveContext(context)
         return template
     }
