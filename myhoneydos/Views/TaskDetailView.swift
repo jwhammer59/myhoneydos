@@ -161,7 +161,8 @@ struct AddSupplyToTaskSheet: View {
     @State private var supplyName = ""
     @State private var supplyQuantity = 1
     @State private var supplyEstimatedCost: Double?
-    @State private var supplySupplier: String?
+    @State private var supplySupplier: String = ""
+    @State private var supplyCostText: String = ""
     @FocusState private var isNameFieldFocused: Bool
     
     private let themeManager = ThemeManager.shared
@@ -194,7 +195,7 @@ struct AddSupplyToTaskSheet: View {
                             .font(.subheadline)
                             .foregroundColor(themeManager.secondaryText)
                         
-                        TextField("Enter supply name...", text: $supplyName)
+                        TextField("Supply name", text: $supplyName)
                             .textFieldStyle(CustomTextFieldStyle())
                             .focused($isNameFieldFocused)
                             .submitLabel(.done)
@@ -215,6 +216,28 @@ struct AddSupplyToTaskSheet: View {
                             
                             Spacer()
                         }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Estimated Cost (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+                        
+                        TextField("0.00", text: $supplyCostText)
+                            .textFieldStyle(CustomTextFieldStyle())
+                            .keyboardType(.decimalPad)
+                            .onChange(of: supplyCostText) {
+                                supplyEstimatedCost = Double(supplyCostText)
+                            }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Supplier (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.secondaryText)
+                        
+                        TextField("Enter supplier...", text: $supplySupplier)
+                            .textFieldStyle(CustomTextFieldStyle())
                     }
                 }
                 .padding()
