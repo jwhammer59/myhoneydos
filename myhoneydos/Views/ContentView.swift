@@ -71,17 +71,25 @@ struct ContentView: View {
                             .fontWeight(.medium)
                             .foregroundColor(themeManager.primaryText)
                     } else {
-                        Image(systemName: "folder")
-                            .font(.subheadline)
-                            .foregroundColor(themeManager.secondaryText)
-//                        Text("Category")
-//                            .font(.subheadline)
-//                            .foregroundColor(themeManager.primaryText)
+                        VStack {
+                            HStack {
+                                Image(systemName: "folder")
+                                    .font(.subheadline)
+                                    .foregroundColor(themeManager.secondaryText)
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                                    .foregroundColor(themeManager.secondaryText)
+                            }
+                            .padding(.bottom, 4)
+                            
+                            Text("Category")
+                                .font(.subheadline)
+                                .foregroundColor(themeManager.primaryText)
+                        }
+                        
                     }
                     
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                        .foregroundColor(themeManager.secondaryText)
+                    
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
@@ -121,17 +129,25 @@ struct ContentView: View {
                             .foregroundColor(themeManager.primaryText)
                             .lineLimit(1)
                     } else {
-                        Image(systemName: "line.3.horizontal.decrease")
-                            .font(.subheadline)
-                            .foregroundColor(themeManager.secondaryText)
-//                        Text("Filter")
-//                            .font(.subheadline)
-//                            .foregroundColor(themeManager.primaryText)
+                        VStack {
+                            HStack {
+                                Image(systemName: "line.3.horizontal.decrease")
+                                    .font(.subheadline)
+                                    .foregroundColor(themeManager.secondaryText)
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                                    .foregroundColor(themeManager.secondaryText)
+                            }
+                            .padding(.bottom, 4)
+                            
+                            Text("Filter")
+                                .font(.subheadline)
+                                .foregroundColor(themeManager.primaryText)
+                        }
+                        
                     }
                     
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                        .foregroundColor(themeManager.secondaryText)
+                    
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
@@ -176,12 +192,16 @@ struct ContentView: View {
                 }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "arrow.up.arrow.down")
-                        .font(.caption)
-                        .foregroundColor(themeManager.secondaryText)
-//                    Text("Sort")
-//                        .font(.subheadline)
-//                        .foregroundColor(themeManager.primaryText)
+                    VStack {
+                        Image(systemName: "arrow.up.arrow.down")
+                            .font(.caption)
+                            .foregroundColor(themeManager.secondaryText)
+                            .padding(.bottom, 4)
+                        Text("Sort")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.primaryText)
+                    }
+                    
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
@@ -372,7 +392,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showingAddTask) {
-            EnhancedAddTaskView()
+            AddTaskView()
         }
         .sheet(item: $selectedTask) { task in
             TaskDetailView(task: task)
@@ -594,7 +614,7 @@ struct ContentView: View {
                     .padding(.top, 50)
                 } else {
                     ForEach(filteredTasks) { task in
-                        EnhancedTaskCardView(
+                        TaskCardView(
                             task: task,
                             isSelected: selectedTasks.contains(task.id),
                             isSelectionMode: isSelectionMode,

@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct EnhancedTaskCardView: View {
+struct TaskCardView: View {
     @Environment(\.modelContext) private var modelContext
     let task: HoneyDoTask
     let isSelected: Bool
@@ -471,7 +471,7 @@ struct EnhancedTaskCardView_Previews: PreviewProvider {
         container.mainContext.insert(supply2)
         
         return VStack(spacing: 16) {
-            EnhancedTaskCardView(
+            TaskCardView(
                 task: sampleTask,
                 isSelected: false,
                 isSelectionMode: false,
@@ -479,7 +479,7 @@ struct EnhancedTaskCardView_Previews: PreviewProvider {
                 onSelect: {}
             )
             
-            EnhancedTaskCardView(
+            TaskCardView(
                 task: sampleTask,
                 isSelected: true,
                 isSelectionMode: true,

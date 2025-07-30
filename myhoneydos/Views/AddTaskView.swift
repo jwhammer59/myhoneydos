@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct EnhancedAddTaskView: View {
+struct AddTaskView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var categories: [TaskCategory]
@@ -547,7 +547,7 @@ struct TagSelectionCard: View {
 }
 
 struct EnhancedSupplyRowView: View {
-    let supply: EnhancedAddTaskView.SupplyItem
+    let supply: AddTaskView.SupplyItem
     let onDelete: () -> Void
     
     private let themeManager = ThemeManager.shared
@@ -605,7 +605,7 @@ struct AddEnhancedSupplySheet: View {
     @State private var costText = ""
     @State private var supplier = ""
     
-    let onAdd: (EnhancedAddTaskView.SupplyItem) -> Void
+    let onAdd: (AddTaskView.SupplyItem) -> Void
     
     private let themeManager = ThemeManager.shared
     
@@ -722,7 +722,7 @@ struct AddEnhancedSupplySheet: View {
     private func addSupply() {
         guard !supplyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
-        let supply = EnhancedAddTaskView.SupplyItem(
+        let supply = AddTaskView.SupplyItem(
             name: supplyName.trimmingCharacters(in: .whitespacesAndNewlines),
             quantity: quantity,
             estimatedCost: estimatedCost,
@@ -736,7 +736,7 @@ struct AddEnhancedSupplySheet: View {
 // MARK: - Preview
 struct EnhancedAddTaskView_Previews: PreviewProvider {
     static var previews: some View {
-        EnhancedAddTaskView()
+        AddTaskView()
             .modelContainer(for: HoneyDoTask.self, inMemory: true)
     }
 }
