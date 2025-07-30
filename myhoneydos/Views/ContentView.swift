@@ -356,40 +356,31 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Header
-                    if !showingSearch {
+                    // Custom Selection Mode Toolbar (Always visible when in selection mode)
+                    if isSelectionMode {
+                        customSelectionToolbar
+                    }
+                    
+                    // Header (only show when not in selection mode)
+                    if !showingSearch && !isSelectionMode {
                         headerView
                     }
                     
                     // Search Bar or Filter Controls
                     if showingSearch {
                         searchView
-                    } else {
+                    } else if !isSelectionMode {
                         controlsView
+                    } else {
+                        // Show simplified controls in selection mode
+                        selectionModeControls
                     }
                     
                     // Task List
                     taskListView
                 }
             }
-            .navigationBarHidden(true)
-            .toolbar {
-                if isSelectionMode {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel") {
-                            isSelectionMode = false
-                            selectedTasks.removeAll()
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Actions") {
-                            showingBulkActions = true
-                        }
-                        .disabled(selectedTasks.isEmpty)
-                    }
-                }
-            }
+            .navigationBarHidden(true) // Always hide system navigation bar
         }
         .sheet(isPresented: $showingAddTask) {
             AddTaskView()
@@ -422,6 +413,116 @@ struct ContentView: View {
         .onAppear {
             createDefaultCategoriesIfNeeded()
         }
+    }
+    
+    // MARK: - Custom Selection Toolbar
+    private var customSelectionToolbar: some View {
+        HStack {
+            // Cancel Button (Left side)
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isSelectionMode = false
+                    selectedTasks.removeAll()
+                }
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "xmark")
+                        .font(.subheadline)
+                    Text("Cancel")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(themeManager.secondaryText)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(themeManager.tertiaryBackground)
+                )
+            }
+            
+            Spacer()
+            
+            // Selection Count (Center)
+            VStack(spacing: 2) {
+                Text(selectedTasks.isEmpty ? "Select Tasks" : "\(selectedTasks.count) Selected")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(themeManager.primaryText)
+                
+                if !selectedTasks.isEmpty {
+                    Text("Tap Actions to continue")
+                        .font(.caption)
+                        .foregroundColor(themeManager.secondaryText)
+                }
+            }
+            
+            Spacer()
+            
+            // Actions Button (Right side)
+            Button(action: {
+                showingBulkActions = true
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.subheadline)
+                    Text("Actions")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(selectedTasks.isEmpty ? themeManager.secondaryText : .white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(selectedTasks.isEmpty ? themeManager.tertiaryBackground : themeManager.accentColor)
+                )
+            }
+            .disabled(selectedTasks.isEmpty)
+            .animation(.easeInOut(duration: 0.2), value: selectedTasks.isEmpty)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Rectangle()
+                .fill(themeManager.secondaryBackground)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        )
+        .transition(.move(edge: .top).combined(with: .opacity))
+    }
+    
+    // MARK: - Selection Mode Controls
+    private var selectionModeControls: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("Selection Mode")
+                    .font(.subheadline)
+                    .foregroundColor(themeManager.secondaryText)
+                
+                Spacer()
+                
+                Button(action: {
+                    // Select All / Deselect All
+                    if selectedTasks.count == filteredTasks.count {
+                        selectedTasks.removeAll()
+                    } else {
+                        selectedTasks = Set(filteredTasks.map { $0.id })
+                    }
+                }) {
+                    Text(selectedTasks.count == filteredTasks.count ? "Deselect All" : "Select All")
+                        .font(.caption)
+                        .foregroundColor(themeManager.accentColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(themeManager.accentColor.opacity(0.1))
+                        )
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 8)
     }
     
     private var headerView: some View {
